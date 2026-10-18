@@ -4,6 +4,8 @@ import DashboardLayout from '../layouts/DashboardLayout'
 import { ProtectedRoute } from './ProtectedRoute'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage'
 import ProfilePage from '../pages/auth/ProfilePage'
 import DashboardPage from '../pages/admin/DashboardPage'
 import CustomersPage from '../pages/admin/CustomersPage'
@@ -32,6 +34,8 @@ export default function AppRoutes() {
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Route>
 
       <Route path="/track/:trackingToken" element={<TrackingPage />} />

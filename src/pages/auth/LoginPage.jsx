@@ -53,6 +53,9 @@ export default function LoginPage() {
         </div>
         <Button className="w-full" type="submit" loading={isLoading} loadingText="Signing in...">Sign in</Button>
       </form>
+      <p className="mt-3 text-sm">
+        <Link className="font-medium text-brand-700" to="/forgot-password">Forgot password?</Link>
+      </p>
       <p className="mt-4 text-sm text-ink-500">
         New shop? <Link className="font-medium text-brand-700" to="/register">Register</Link>
       </p>
