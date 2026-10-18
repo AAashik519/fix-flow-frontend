@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { toast } from 'sonner'
+import { getAccessToken } from '../../lib/authToken'
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'
 
@@ -7,6 +8,8 @@ const rawBaseQuery = fetchBaseQuery({
   baseUrl,
   credentials: 'include',
   prepareHeaders: (headers) => {
+    const token = getAccessToken()
+    if (token) headers.set('Authorization', `Bearer ${token}`)
     headers.set('Accept', 'application/json')
     return headers
   },

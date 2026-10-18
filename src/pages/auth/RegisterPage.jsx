@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { useRegisterMutation } from '../../services/api/authApi'
 import { baseApi } from '../../services/api/baseApi'
 import { useAppDispatch } from '../../app/hooks'
+import { setAccessToken } from '../../lib/authToken'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
@@ -29,7 +30,8 @@ export default function RegisterPage() {
 
   const onSubmit = async (values) => {
     try {
-      await registerShop(values).unwrap()
+      const res = await registerShop(values).unwrap()
+      setAccessToken(res.data.accessToken)
       dispatch(baseApi.util.resetApiState())
       toast.success('Shop registered')
       navigate('/dashboard')

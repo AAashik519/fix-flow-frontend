@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { useLoginMutation } from '../../services/api/authApi'
 import { baseApi } from '../../services/api/baseApi'
 import { useAppDispatch } from '../../app/hooks'
+import { setAccessToken } from '../../lib/authToken'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
@@ -26,6 +27,7 @@ export default function LoginPage() {
   const onSubmit = async (values) => {
     try {
       const res = await login(values).unwrap()
+      setAccessToken(res.data.accessToken)
       dispatch(baseApi.util.resetApiState())
       toast.success('Welcome back')
       navigate(res.data.user.role === 'TECHNICIAN' ? '/technician' : '/dashboard')

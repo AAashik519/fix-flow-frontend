@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { useMeQuery, useLogoutMutation } from '../services/api/authApi'
 import { baseApi } from '../services/api/baseApi'
+import { setAccessToken } from '../lib/authToken'
 import { useGetNotificationsQuery } from '../services/api/notificationsApi'
 import { Button } from '../components/ui/button'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
@@ -61,6 +62,7 @@ export default function DashboardLayout() {
     } catch {
       // Session may already be gone; still leave this shop's cached data behind.
     } finally {
+      setAccessToken(null)
       dispatch(baseApi.util.resetApiState())
       navigate('/login')
     }
