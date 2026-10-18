@@ -26,6 +26,28 @@ export const inventoryApi = baseApi.injectEndpoints({
         { type: 'Inventory', id: 'LOW' },
       ],
     }),
+    uploadInventoryPhotos: builder.mutation({
+      query: ({ id, files }) => {
+        const formData = new FormData()
+        files.forEach((file) => formData.append('photos', file))
+        return { url: `/inventory/${id}/photos`, method: 'POST', body: formData }
+      },
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'Inventory', id },
+        { type: 'Inventory', id: 'LIST' },
+      ],
+    }),
+    removeInventoryPhoto: builder.mutation({
+      query: ({ id, url }) => ({
+        url: `/inventory/${id}/photos`,
+        method: 'DELETE',
+        body: { url },
+      }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'Inventory', id },
+        { type: 'Inventory', id: 'LIST' },
+      ],
+    }),
     addStockMovement: builder.mutation({
       query: ({ id, ...body }) => ({
         url: `/inventory/${id}/stock-movements`,
@@ -51,6 +73,8 @@ export const {
   useGetLowStockQuery,
   useCreateInventoryItemMutation,
   useUpdateInventoryItemMutation,
+  useUploadInventoryPhotosMutation,
+  useRemoveInventoryPhotoMutation,
   useAddStockMovementMutation,
   useGetStockMovementsQuery,
 } = inventoryApi

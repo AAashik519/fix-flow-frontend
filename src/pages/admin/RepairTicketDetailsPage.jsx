@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { PageHeader } from '../../components/common/PageHeader'
 import { LoadingState } from '../../components/common/LoadingState'
@@ -21,7 +21,7 @@ import { useGetTechniciansQuery } from '../../services/api/techniciansApi'
 import { useGetInventoryQuery } from '../../services/api/inventoryApi'
 import { useCreatePaymentMutation, useGetTicketPaymentsQuery } from '../../services/api/paymentsApi'
 import { useMeQuery } from '../../services/api/authApi'
-import { formatDate, formatMoney, idempotencyKey } from '../../lib/utils'
+import { assetUrl, formatDate, formatMoney, idempotencyKey } from '../../lib/utils'
 
 const NEXT = {
   RECEIVED: ['DIAGNOSING', 'CANCELLED'],
@@ -44,11 +44,11 @@ export default function RepairTicketDetailsPage() {
   const techs = useGetTechniciansQuery(undefined, { skip: !isAdmin })
   const inventory = useGetInventoryQuery({ limit: 100 }, { skip: !isAdmin && me?.data?.role !== 'TECHNICIAN' })
   const [updateStatus, statusState] = useUpdateRepairStatusMutation()
-  const [assignTechnician] = useAssignTechnicianMutation()
-  const [addDiagnostics] = useAddDiagnosticsMutation()
-  const [addNote] = useAddNoteMutation()
-  const [addParts] = useAddPartsMutation()
-  const [createPayment] = useCreatePaymentMutation()
+  const [assignTechnician, assignState] = useAssignTechnicianMutation()
+  const [addDiagnostics, diagState] = useAddDiagnosticsMutation()
+  const [addNote, noteState] = useAddNoteMutation()
+  const [addParts, partsState] = useAddPartsMutation()
+  const [createPayment, payState] = useCreatePaymentMutation()
 
   const [status, setStatus] = useState('')
   const [techId, setTechId] = useState('')
@@ -80,7 +80,16 @@ export default function RepairTicketDetailsPage() {
       <PageHeader
         title={t.ticketNumber}
         description={t.problemDescription}
-        actions={<StatusBadge status={t.status} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <StatusBadge status={t.status} />
+            {isAdmin ? (
+              <Button asChild variant="outline">
+                <Link to={`/repair-tickets/${id}/edit`}>Edit ticket</Link>
+              </Button>
+            ) : null}
+          </div>
+        }
       />
 
       <div className="grid gap-4 xl:grid-cols-3">
@@ -96,6 +105,18 @@ export default function RepairTicketDetailsPage() {
             <div>Outstanding: {formatMoney(t.outstandingBalance)}</div>
             <div>Payment: <StatusBadge status={t.paymentStatus} /></div>
             <div className="sm:col-span-2">Diagnostics: {t.diagnosticFindings || '—'}</div>
+            {(t.deviceId?.photoUrls || []).length ? (
+              <div className="sm:col-span-2 flex flex-wrap gap-2">
+                {t.deviceId.photoUrls.map((url) => (
+                  <img
+                    key={url}
+                    src={assetUrl(url)}
+                    alt=""
+                    className="h-16 w-16 rounded-lg border border-line object-cover"
+                  />
+                ))}
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -107,8 +128,11 @@ export default function RepairTicketDetailsPage() {
               {nextStatuses.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
             <Button
+              type="button"
               className="w-full"
-              disabled={!status || statusState.isLoading}
+              loading={statusState.isLoading}
+              loadingText="Submitting…"
+              disabled={!status}
               onClick={() => run(() => updateStatus({ id, status }).unwrap(), 'Status updated')}
             >
               Apply status
@@ -128,7 +152,7 @@ export default function RepairTicketDetailsPage() {
                   <option key={tech._id} value={tech._id}>{tech.name}</option>
                 ))}
               </select>
-              <Button disabled={!techId} onClick={() => run(() => assignTechnician({ id, technicianId: techId }).unwrap(), 'Assigned')}>
+              <Button type="button" loading={assignState.isLoading} loadingText="Saving…" disabled={!techId} onClick={() => run(() => assignTechnician({ id, technicianId: techId }).unwrap(), 'Assigned')}>
                 Assign
               </Button>
             </CardContent>
@@ -140,6 +164,9 @@ export default function RepairTicketDetailsPage() {
           <CardContent className="space-y-2">
             <Textarea value={diag} onChange={(e) => setDiag(e.target.value)} placeholder="Findings..." />
             <Button
+              type="button"
+              loading={diagState.isLoading}
+              loadingText="Saving…"
               disabled={!diag}
               onClick={() => run(() => addDiagnostics({ id, diagnosticFindings: diag }).unwrap(), 'Diagnostics saved')}
             >
@@ -157,6 +184,9 @@ export default function RepairTicketDetailsPage() {
               Visible to customer
             </label>
             <Button
+              type="button"
+              loading={noteState.isLoading}
+              loadingText="Saving…"
               disabled={!note}
               onClick={() => run(() => addNote({ id, body: note, customerVisible }).unwrap(), 'Note added')}
             >
@@ -186,6 +216,9 @@ export default function RepairTicketDetailsPage() {
               <Input className="w-20" type="number" min={1} value={partQty} onChange={(e) => setPartQty(Number(e.target.value))} />
             </div>
             <Button
+              type="button"
+              loading={partsState.isLoading}
+              loadingText="Saving…"
               disabled={!partId}
               onClick={() =>
                 run(
@@ -224,7 +257,10 @@ export default function RepairTicketDetailsPage() {
                 <Input type="number" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} />
               </div>
               <Button
+                type="button"
                 className="self-end"
+                loading={payState.isLoading}
+                loadingText="Submitting…"
                 disabled={!payAmount}
                 onClick={() =>
                   run(

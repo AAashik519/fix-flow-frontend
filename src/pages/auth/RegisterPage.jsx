@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useRegisterMutation } from '../../services/api/authApi'
+import { baseApi } from '../../services/api/baseApi'
+import { useAppDispatch } from '../../app/hooks'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
@@ -19,6 +21,7 @@ const schema = z.object({
 
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const [registerShop, { isLoading }] = useRegisterMutation()
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
@@ -27,6 +30,7 @@ export default function RegisterPage() {
   const onSubmit = async (values) => {
     try {
       await registerShop(values).unwrap()
+      dispatch(baseApi.util.resetApiState())
       toast.success('Shop registered')
       navigate('/dashboard')
     } catch (err) {
@@ -54,8 +58,8 @@ export default function RegisterPage() {
           </div>
         ))}
         <div className="sm:col-span-2">
-          <Button className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating...' : 'Create shop'}
+          <Button className="w-full" type="submit" loading={isLoading} loadingText="Creating...">
+            Create shop
           </Button>
         </div>
       </form>

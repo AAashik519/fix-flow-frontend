@@ -36,6 +36,7 @@ export default function CustomersPage() {
                 <th className="px-4 py-3">Phone</th>
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Created</th>
+                <th className="px-4 py-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -45,6 +46,11 @@ export default function CustomersPage() {
                   <td className="px-4 py-3">{c.phone}</td>
                   <td className="px-4 py-3">{c.email || '—'}</td>
                   <td className="px-4 py-3">{formatDate(c.createdAt)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={`/customers/${c._id}`}>View</Link>
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>

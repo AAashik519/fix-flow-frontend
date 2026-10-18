@@ -65,7 +65,7 @@ export default function SettingsPage() {
           <input type="checkbox" {...register('requirePaymentBeforeDelivery')} />
           Require payment before delivery
         </label>
-        <Button disabled={saving}>Save settings</Button>
+        <Button type="submit" loading={saving} loadingText="Saving…">Save settings</Button>
       </form>
     </div>
   )

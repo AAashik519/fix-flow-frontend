@@ -18,3 +18,13 @@ export function formatDate(value) {
 export function idempotencyKey(prefix = 'ff') {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
+
+const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'
+
+/** Resolve uploaded asset paths (e.g. /uploads/devices/x.jpg) to a full URL. */
+export function assetUrl(path) {
+  if (!path) return ''
+  if (/^https?:\/\//i.test(path) || path.startsWith('blob:')) return path
+  const origin = apiBase.replace(/\/api\/v1\/?$/, '')
+  return `${origin}${path.startsWith('/') ? path : `/${path}`}`
+}

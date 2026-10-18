@@ -7,13 +7,16 @@ import {
   useMarkAllNotificationsReadMutation,
   useMarkNotificationReadMutation,
 } from '../../services/api/notificationsApi'
+import { useMeQuery } from '../../services/api/authApi'
 import { formatDate } from '../../lib/utils'
 
 export default function NotificationsPage() {
   const { data, isLoading } = useGetNotificationsQuery()
   const [markRead] = useMarkNotificationReadMutation()
-  const [markAll] = useMarkAllNotificationsReadMutation()
+  const [markAll, { isLoading: markingAll }] = useMarkAllNotificationsReadMutation()
   const navigate = useNavigate()
+  const { data: me } = useMeQuery()
+  const isTechnician = me?.data?.role === 'TECHNICIAN'
 
   if (isLoading) return <LoadingState />
   const items = data?.data?.items || []
@@ -24,7 +27,7 @@ export default function NotificationsPage() {
         title="Notifications"
         description={`${data?.data?.unreadCount || 0} unread`}
         actions={
-          <Button variant="outline" onClick={() => markAll()}>
+          <Button type="button" variant="outline" loading={markingAll} loadingText="Saving…" onClick={() => markAll()}>
             Mark all read
           </Button>
         }
@@ -38,7 +41,9 @@ export default function NotificationsPage() {
             }`}
             onClick={async () => {
               if (!n.isRead) await markRead(n._id)
-              if (n.relatedTicketId) navigate(`/repair-tickets/${n.relatedTicketId}`)
+              if (n.relatedTicketId) {
+                navigate(isTechnician ? `/technician/repairs/${n.relatedTicketId}` : `/repair-tickets/${n.relatedTicketId}`)
+              }
             }}
           >
             <div className="font-medium">{n.title}</div>

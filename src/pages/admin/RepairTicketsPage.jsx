@@ -46,6 +46,7 @@ export default function RepairTicketsPage() {
               <th className="px-4 py-3">Device</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Balance</th>
+              <th className="px-4 py-3 text-right">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -56,6 +57,11 @@ export default function RepairTicketsPage() {
                 <td className="px-4 py-3">{t.deviceId?.brand} {t.deviceId?.model}</td>
                 <td className="px-4 py-3"><StatusBadge status={t.status} /></td>
                 <td className="px-4 py-3">{formatMoney(t.outstandingBalance)}</td>
+                <td className="px-4 py-3 text-right">
+                  <Button asChild variant="outline" size="sm">
+                    <Link to={`/repair-tickets/${t._id}`}>View</Link>
+                  </Button>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -18,6 +18,22 @@ export const devicesApi = baseApi.injectEndpoints({
       query: ({ id, ...body }) => ({ url: `/devices/${id}`, method: 'PATCH', body }),
       invalidatesTags: (_r, _e, { id }) => [{ type: 'Device', id }, { type: 'Device', id: 'LIST' }],
     }),
+    uploadDevicePhotos: builder.mutation({
+      query: ({ id, files }) => {
+        const formData = new FormData()
+        files.forEach((file) => formData.append('photos', file))
+        return { url: `/devices/${id}/photos`, method: 'POST', body: formData }
+      },
+      invalidatesTags: (_r, _e, { id }) => [{ type: 'Device', id }, { type: 'Device', id: 'LIST' }],
+    }),
+    removeDevicePhoto: builder.mutation({
+      query: ({ id, url }) => ({
+        url: `/devices/${id}/photos`,
+        method: 'DELETE',
+        body: { url },
+      }),
+      invalidatesTags: (_r, _e, { id }) => [{ type: 'Device', id }, { type: 'Device', id: 'LIST' }],
+    }),
     deleteDevice: builder.mutation({
       query: (id) => ({ url: `/devices/${id}`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Device', id: 'LIST' }],
@@ -30,5 +46,7 @@ export const {
   useGetDeviceQuery,
   useCreateDeviceMutation,
   useUpdateDeviceMutation,
+  useUploadDevicePhotosMutation,
+  useRemoveDevicePhotoMutation,
   useDeleteDeviceMutation,
 } = devicesApi

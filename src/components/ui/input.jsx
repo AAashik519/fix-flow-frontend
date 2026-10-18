@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { cn } from '../../lib/utils'
 
-export const Input = React.forwardRef(({ className, type, ...props }, ref) => (
+export const Input = React.forwardRef(({ className, type, onWheel, ...props }, ref) => (
   <input
     type={type}
     className={cn(
@@ -9,6 +9,10 @@ export const Input = React.forwardRef(({ className, type, ...props }, ref) => (
       className,
     )}
     ref={ref}
+    onWheel={(e) => {
+      if (type === 'number') e.currentTarget.blur()
+      onWheel?.(e)
+    }}
     {...props}
   />
 ))

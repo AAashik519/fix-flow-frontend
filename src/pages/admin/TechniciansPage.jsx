@@ -7,24 +7,39 @@ import { LoadingState } from '../../components/common/LoadingState'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
-import { useCreateTechnicianMutation, useGetTechniciansQuery } from '../../services/api/techniciansApi'
+import { useCreateTechnicianMutation, useGetTechniciansQuery, useUpdateTechnicianMutation } from '../../services/api/techniciansApi'
+
+const EMPTY_TECH = { name: '', email: '', password: '' }
 
 const schema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
 export default function TechniciansPage() {
   const { data, isLoading } = useGetTechniciansQuery()
   const [createTech, { isLoading: saving }] = useCreateTechnicianMutation()
-  const { register, handleSubmit, reset, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
+  const [updateTech, { isLoading: updating }] = useUpdateTechnicianMutation()
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: EMPTY_TECH,
+  })
 
   const onSubmit = async (values) => {
     try {
       await createTech(values).unwrap()
       toast.success('Technician created')
-      reset()
+      reset(EMPTY_TECH)
+    } catch (err) {
+      toast.error(err?.data?.message || 'Failed')
+    }
+  }
+
+  const toggleActive = async (tech) => {
+    try {
+      await updateTech({ id: tech._id, isActive: !tech.isActive }).unwrap()
+      toast.success(tech.isActive ? 'Technician deactivated' : 'Technician activated')
     } catch (err) {
       toast.error(err?.data?.message || 'Failed')
     }
@@ -41,14 +56,16 @@ export default function TechniciansPage() {
         </div>
         <div className="space-y-1">
           <Label>Email</Label>
-          <Input type="email" {...register('email')} />
+          <Input type="email" autoComplete="off" {...register('email')} />
+          {errors.email ? <p className="text-xs text-red-600">{errors.email.message}</p> : null}
         </div>
         <div className="space-y-1">
           <Label>Password</Label>
-          <Input type="password" {...register('password')} />
+          <Input type="password" autoComplete="new-password" {...register('password')} />
+          {errors.password ? <p className="text-xs text-red-600">{errors.password.message}</p> : null}
         </div>
         <div className="flex items-end">
-          <Button disabled={saving}>Add technician</Button>
+          <Button type="submit" loading={saving} loadingText="Saving…">Add technician</Button>
         </div>
       </form>
       {isLoading ? (
@@ -61,8 +78,13 @@ export default function TechniciansPage() {
                 <div className="font-medium">{t.name}</div>
                 <div className="text-ink-500">{t.email}</div>
               </div>
-              <div className={t.isActive ? 'text-emerald-700' : 'text-red-600'}>
-                {t.isActive ? 'Active' : 'Inactive'}
+              <div className="flex items-center gap-3">
+                <span className={t.isActive ? 'text-emerald-700' : 'text-red-600'}>
+                  {t.isActive ? 'Active' : 'Inactive'}
+                </span>
+                <Button type="button" size="sm" variant="outline" loading={updating} loadingText="Saving…" onClick={() => toggleActive(t)}>
+                  {t.isActive ? 'Deactivate' : 'Activate'}
+                </Button>
               </div>
             </div>
           ))}

@@ -47,6 +47,7 @@ export default function AppRoutes() {
           <Route path="/devices" element={<DevicesPage />} />
           <Route path="/repair-tickets" element={<RepairTicketsPage />} />
           <Route path="/repair-tickets/new" element={<RepairTicketFormPage />} />
+          <Route path="/repair-tickets/:id/edit" element={<RepairTicketFormPage />} />
           <Route path="/repair-tickets/:id" element={<RepairTicketDetailsPage />} />
           <Route path="/technicians" element={<TechniciansPage />} />
           <Route path="/inventory" element={<InventoryPage />} />

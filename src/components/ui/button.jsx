@@ -25,8 +25,60 @@ const buttonVariants = cva(
   },
 )
 
-export const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
+export const Button = React.forwardRef(({
+  className,
+  variant,
+  size,
+  asChild = false,
+  loading = false,
+  loadingText = 'Saving…',
+  disabled,
+  onClick,
+  type,
+  children,
+  ...props
+}, ref) => {
   const Comp = asChild ? Slot : 'button'
-  return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+  const lock = React.useRef(false)
+  const loadingRef = React.useRef(loading)
+  loadingRef.current = loading
+
+  React.useEffect(() => {
+    if (!loading) lock.current = false
+  }, [loading])
+
+  const handleClick = (event) => {
+    if (disabled || loading || lock.current) {
+      event.preventDefault()
+      event.stopPropagation()
+      return
+    }
+    lock.current = true
+    onClick?.(event)
+    window.setTimeout(() => {
+      if (!loadingRef.current) lock.current = false
+    }, 600)
+  }
+
+  if (asChild) {
+    return (
+      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
+        {children}
+      </Comp>
+    )
+  }
+
+  return (
+    <Comp
+      className={cn(buttonVariants({ variant, size, className }))}
+      ref={ref}
+      type={type}
+      disabled={disabled || loading}
+      onClick={handleClick}
+      {...props}
+    >
+      {loading ? loadingText : children}
+    </Comp>
+  )
 })
 Button.displayName = 'Button'

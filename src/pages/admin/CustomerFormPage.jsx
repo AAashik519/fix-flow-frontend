@@ -15,10 +15,16 @@ import {
   useUpdateCustomerMutation,
 } from '../../services/api/customersApi'
 
+const REQUIRED_FIELDS = ['name', 'phone', 'email']
+
 const schema = z.object({
-  name: z.string().min(2),
-  phone: z.string().min(6),
-  email: z.string().email().optional().or(z.literal('')),
+  name: z.string().trim().min(1, 'Name is required').min(2, 'Name must be at least 2 characters'),
+  phone: z
+    .string()
+    .trim()
+    .min(1, 'Phone is required')
+    .regex(/^\d{6,15}$/, 'Phone must contain only numbers (6–15 digits)'),
+  email: z.string().trim().min(1, 'Email is required').email('Enter a valid email'),
   address: z.string().optional(),
   notes: z.string().optional(),
 })
@@ -57,11 +63,20 @@ export default function CustomerFormPage() {
   return (
     <div className="max-w-2xl">
       <PageHeader title={isEdit ? 'Edit customer' : 'New customer'} />
-      <form className="space-y-4 rounded-xl border border-line bg-panel p-5" onSubmit={handleSubmit(onSubmit)}>
+      <form className="space-y-4 rounded-xl border border-line bg-panel p-5 capitalize" onSubmit={handleSubmit(onSubmit)}>
         {['name', 'phone', 'email', 'address'].map((field) => (
           <div key={field} className="space-y-2">
-            <Label htmlFor={field}>{field}</Label>
-            <Input id={field} {...register(field)} />
+            <Label htmlFor={field}>
+              {field}
+              {REQUIRED_FIELDS.includes(field) ? <span className="text-red-600"> *</span> : null}
+            </Label>
+            <Input
+              id={field}
+              type={field === 'email' ? 'email' : 'text'}
+              inputMode={field === 'phone' ? 'numeric' : undefined}
+              required={REQUIRED_FIELDS.includes(field)}
+              {...register(field)}
+            />
             {errors[field] ? <p className="text-xs text-red-600">{errors[field].message}</p> : null}
           </div>
         ))}
@@ -69,7 +84,7 @@ export default function CustomerFormPage() {
           <Label htmlFor="notes">Notes</Label>
           <Textarea id="notes" {...register('notes')} />
         </div>
-        <Button disabled={createState.isLoading || updateState.isLoading}>Save</Button>
+        <Button type="submit" loading={createState.isLoading || updateState.isLoading} loadingText="Saving…">Save</Button>
       </form>
     </div>
   )
