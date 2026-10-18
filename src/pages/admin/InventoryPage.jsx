@@ -54,8 +54,8 @@ export default function InventoryPage() {
   const [photos, setPhotos] = useState([])
   const { data, isLoading } = useGetInventoryQuery({ limit: 50 })
   const low = useGetLowStockQuery()
-  const [createItem, { isLoading: saving }] = useCreateInventoryItemMutation()
-  const [uploadPhotos] = useUploadInventoryPhotosMutation()
+  const [createItem, { isLoading: creating }] = useCreateInventoryItemMutation()
+  const [uploadPhotos, { isLoading: uploading }] = useUploadInventoryPhotosMutation()
   const {
     register,
     handleSubmit,
@@ -129,11 +129,12 @@ export default function InventoryPage() {
             </div>
           )
         })}
-        <MultiPhotoPicker files={photos} onFilesChange={setPhotos} label="Item photos" size="sm" />
-        <div className="md:col-span-3">
-          <Button type="submit" loading={saving} loadingText="Saving…">
+        <MultiPhotoPicker files={photos} onFilesChange={setPhotos} disabled={creating || uploading} label="Item photos" size="sm" />
+        <div className="flex items-center gap-2 md:col-span-3">
+          <Button type="submit" loading={creating || uploading} loadingText={uploading || photos.length ? 'Uploading…' : 'Saving…'}>
             Add item
           </Button>
+          {creating || uploading ? <span className="text-sm text-ink-500">Please wait, do not click again.</span> : null}
         </div>
       </form>
       {isLoading ? (

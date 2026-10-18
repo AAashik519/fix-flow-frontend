@@ -19,7 +19,7 @@ export default function ReportsPage() {
     window.open(`${base}/reports/export?type=${type}`, '_blank')
   }
 
-  if (repairs.isLoading || payments.isLoading) return <LoadingState />
+  if (repairs.isLoading || payments.isLoading) return <LoadingState variant="page" />
 
   return (
     <div>

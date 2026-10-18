@@ -49,13 +49,13 @@ export default function DevicesPage() {
   const customers = useGetCustomersQuery({ limit: 100 })
   const [createDevice, { isLoading: creating }] = useCreateDeviceMutation()
   const [updateDevice, { isLoading: updating }] = useUpdateDeviceMutation()
-  const [uploadPhotos] = useUploadDevicePhotosMutation()
+  const [uploadPhotos, { isLoading: uploading }] = useUploadDevicePhotosMutation()
   const [removePhoto] = useRemoveDevicePhotoMutation()
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
     defaultValues: EMPTY_DEVICE,
   })
-  const saving = creating || updating
+  const saving = creating || updating || uploading
   const editingDevice = (data?.data || []).find((d) => d._id === editingId)
 
   const clearForm = () => {
@@ -139,18 +139,22 @@ export default function DevicesPage() {
           files={photos}
           onFilesChange={setPhotos}
           existingUrls={editingDevice?.photoUrls || []}
-          onRemoveExisting={editingId ? removeExistingPhoto : undefined}
+          onRemoveExisting={editingId && !saving ? removeExistingPhoto : undefined}
+          disabled={saving}
           label="Device photos"
         />
-        <div className="flex gap-2 md:col-span-3">
-          <Button type="submit" loading={saving} loadingText="Saving…">{editingId ? 'Save changes' : 'Register device'}</Button>
+        <div className="flex items-center gap-2 md:col-span-3">
+          <Button type="submit" loading={saving} loadingText={uploading || photos.length ? 'Uploading…' : 'Saving…'}>
+            {editingId ? 'Save changes' : 'Register device'}
+          </Button>
+          {saving ? <span className="text-sm text-ink-500">Please wait, do not click again.</span> : null}
           {editingId ? (
-            <Button type="button" variant="outline" onClick={clearForm}>Cancel</Button>
+            <Button type="button" variant="outline" disabled={saving} onClick={clearForm}>Cancel</Button>
           ) : null}
         </div>
       </form>
       <Input className="mb-4" placeholder="Search devices..." value={search} onChange={(e) => setSearch(e.target.value)} />
-      {isLoading ? <LoadingState /> : null}
+      {isLoading ? <LoadingState variant="list" /> : null}
       {!isLoading && !(data?.data || []).length ? <EmptyState title="No devices" /> : null}
       <div className="space-y-2">
         {(data?.data || []).map((d) => (

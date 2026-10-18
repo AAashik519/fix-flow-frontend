@@ -113,7 +113,7 @@ export default function RepairTicketFormPage() {
     }
   }
 
-  if (isEdit && ticketQuery.isLoading) return <LoadingState />
+  if (isEdit && ticketQuery.isLoading) return <LoadingState variant="page" />
   if (isEdit && !ticketQuery.data?.data) return <div>Ticket not found</div>
 
   const isLoading = creating || updating

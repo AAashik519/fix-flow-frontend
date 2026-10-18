@@ -5,7 +5,7 @@ import { LoadingState } from '../../components/common/LoadingState'
 
 export default function ProfilePage() {
   const { data, isLoading } = useMeQuery()
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="page" />
   const user = data?.data
   return (
     <div>

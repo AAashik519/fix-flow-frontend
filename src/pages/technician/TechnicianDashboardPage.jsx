@@ -9,7 +9,7 @@ import { useGetDashboardOverviewQuery } from '../../services/api/dashboardApi'
 export default function TechnicianDashboardPage() {
   const tickets = useGetRepairTicketsQuery({ assignedToMe: true, limit: 10 })
   const overview = useGetDashboardOverviewQuery()
-  if (tickets.isLoading) return <LoadingState />
+  if (tickets.isLoading) return <LoadingState variant="page" />
   const active = (tickets.data?.data || []).filter(
     (t) => !['DELIVERED', 'CANCELLED'].includes(t.status),
   )

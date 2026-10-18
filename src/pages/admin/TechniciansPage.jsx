@@ -69,7 +69,7 @@ export default function TechniciansPage() {
         </div>
       </form>
       {isLoading ? (
-        <LoadingState />
+        <LoadingState variant="list" />
       ) : (
         <div className="space-y-2">
           {(data?.data || []).map((t) => (

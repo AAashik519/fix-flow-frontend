@@ -5,7 +5,7 @@ import { formatDate, formatMoney } from '../../lib/utils'
 
 export default function PaymentsPage() {
   const { data, isLoading } = useGetPaymentsQuery({ limit: 50 })
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="page" />
   return (
     <div>
       <PageHeader title="Payments" description="Successful payment records" />

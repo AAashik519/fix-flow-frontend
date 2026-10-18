@@ -9,7 +9,7 @@ export default function TrackingPage() {
   const { trackingToken } = useParams()
   const { data, isLoading, isError } = useTrackRepairQuery(trackingToken)
 
-  if (isLoading) return <LoadingState label="Looking up your repair..." />
+  if (isLoading) return <LoadingState variant="page" />
   if (isError || !data?.data) {
     return (
       <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 text-center">

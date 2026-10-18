@@ -59,7 +59,7 @@ export default function RepairTicketDetailsPage() {
   const [partQty, setPartQty] = useState(1)
   const [payAmount, setPayAmount] = useState('')
 
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="page" />
   const t = data?.data
   if (!t) return <div>Ticket not found</div>
 

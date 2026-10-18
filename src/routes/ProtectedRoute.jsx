@@ -6,7 +6,7 @@ export function ProtectedRoute({ roles }) {
   const location = useLocation()
   const { data, isLoading, isError } = useMeQuery()
 
-  if (isLoading) return <LoadingState label="Checking session..." />
+  if (isLoading) return <LoadingState variant="spinner" label="Checking session..." />
   if (isError || !data?.data) {
     return <Navigate to="/login" replace state={{ from: location }} />
   }

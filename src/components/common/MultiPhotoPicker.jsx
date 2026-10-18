@@ -9,7 +9,7 @@ const TILES = {
 
 /**
  * Multi photo picker with local previews, lightbox, and optional existing remote URLs.
- * @param {{ files: File[], onFilesChange: (files: File[]) => void, existingUrls?: string[], onRemoveExisting?: (url: string) => void, max?: number, label?: string, size?: 'sm' | 'md' }} props
+ * @param {{ files: File[], onFilesChange: (files: File[]) => void, existingUrls?: string[], onRemoveExisting?: (url: string) => void, max?: number, label?: string, size?: 'sm' | 'md', disabled?: boolean }} props
  */
 export function MultiPhotoPicker({
   files = [],
@@ -19,6 +19,7 @@ export function MultiPhotoPicker({
   max = 10,
   label = 'Photos',
   size = 'sm',
+  disabled = false,
 }) {
   const tile = TILES[size] || TILES.md
   const inputRef = useRef(null)
@@ -115,10 +116,11 @@ export function MultiPhotoPicker({
         {remaining > 0 ? (
           <button
             type="button"
-            className={`${tile} inline-flex items-center justify-center rounded-lg border border-line bg-panel font-medium text-ink-700 hover:bg-brand-50`}
+            disabled={disabled}
+            className={`${tile} inline-flex items-center justify-center rounded-lg border border-line bg-panel font-medium text-ink-700 hover:bg-brand-50 disabled:opacity-50`}
             onClick={() => inputRef.current?.click()}
           >
-            + Add
+            {disabled ? '…' : '+ Add'}
           </button>
         ) : null}
       </div>

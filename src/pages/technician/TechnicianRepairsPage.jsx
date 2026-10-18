@@ -6,7 +6,7 @@ import { useGetRepairTicketsQuery } from '../../services/api/repairTicketsApi'
 
 export default function TechnicianRepairsPage() {
   const { data, isLoading } = useGetRepairTicketsQuery({ assignedToMe: true, limit: 50 })
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="page" />
   return (
     <div>
       <PageHeader title="Assigned repairs" />

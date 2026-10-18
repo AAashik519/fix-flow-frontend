@@ -11,7 +11,7 @@ export default function CustomerDetailsPage() {
   const { id } = useParams()
   const { data, isLoading } = useGetCustomerQuery(id)
   const history = useGetCustomerRepairHistoryQuery(id)
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="page" />
   const c = data?.data
   const h = history.data?.data
 

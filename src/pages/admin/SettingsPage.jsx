@@ -27,7 +27,7 @@ export default function SettingsPage() {
     }
   }, [data, reset])
 
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="page" />
 
   const onSubmit = async (values) => {
     try {

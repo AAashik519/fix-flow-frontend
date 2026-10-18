@@ -18,7 +18,7 @@ export default function NotificationsPage() {
   const { data: me } = useMeQuery()
   const isTechnician = me?.data?.role === 'TECHNICIAN'
 
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="list" />
   const items = data?.data?.items || []
 
   return (

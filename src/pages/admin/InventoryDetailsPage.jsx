@@ -72,7 +72,7 @@ export default function InventoryDetailsPage() {
     })
   }, [data, reset])
 
-  if (isLoading) return <LoadingState />
+  if (isLoading) return <LoadingState variant="page" />
   const item = data?.data
 
   const onSave = async (values) => {
@@ -209,7 +209,8 @@ export default function InventoryDetailsPage() {
               files={newPhotos}
               onFilesChange={setNewPhotos}
               existingUrls={item?.photoUrls || []}
-              onRemoveExisting={onRemoveExisting}
+              onRemoveExisting={uploading ? undefined : onRemoveExisting}
+              disabled={uploading}
               label="Item photos"
             />
             {newPhotos.length ? (

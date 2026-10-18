@@ -37,7 +37,7 @@ export default function DashboardPage() {
   const revenue = useGetRevenueStatisticsQuery()
   const workload = useGetTechnicianWorkloadQuery()
 
-  if (overview.isLoading) return <LoadingState />
+  if (overview.isLoading) return <LoadingState variant="page" />
   const o = overview.data?.data || {}
 
   return (
