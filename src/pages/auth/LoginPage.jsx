@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation()
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: { email: '', password: '' },
   })
 
   const onSubmit = async (values) => {
@@ -40,15 +41,33 @@ export default function LoginPage() {
     <div>
       <h1 className="font-display text-2xl font-bold">Sign in</h1>
       <p className="mt-1 text-sm text-ink-500">Access your FixFlow workspace</p>
-      <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+      <form className="mt-6 space-y-4" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" {...register('email')} />
+          <Input
+            id="email"
+            type="email"
+            autoComplete="off"
+            readOnly
+            onFocus={(e) => {
+              e.target.readOnly = false
+            }}
+            {...register('email')}
+          />
           {errors.email ? <p className="text-xs text-red-600">{errors.email.message}</p> : null}
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" {...register('password')} />
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            readOnly
+            onFocus={(e) => {
+              e.target.readOnly = false
+            }}
+            {...register('password')}
+          />
           {errors.password ? <p className="text-xs text-red-600">{errors.password.message}</p> : null}
         </div>
         <Button className="w-full" type="submit" loading={isLoading} loadingText="Signing in...">Sign in</Button>
